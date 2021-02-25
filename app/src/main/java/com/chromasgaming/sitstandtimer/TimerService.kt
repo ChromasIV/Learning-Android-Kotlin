@@ -35,7 +35,7 @@ class TimerService: Service() {
                 sendNotify(mTextField)
 
                 Intent().also { intent ->
-                    intent.action = "com.chromasgaming.sitstandtimer"
+                    intent.action = "com.chromasgaming.sitstandtimer.TEST"
                     intent.putExtra("time", mTextField)
                     sendBroadcast(intent)
                 }
@@ -65,6 +65,8 @@ class TimerService: Service() {
             // Set the intent that will fire when the user taps the notification
             .setContentIntent(pendingIntent)
             .setAutoCancel(true)
+            .setVibrate(LongArray(0))
+
 
         createNotificationChannel()?.notify(0, builder.build())
         //notificationManager?.notify(0, builder.build())
@@ -76,9 +78,11 @@ class TimerService: Service() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = getString(R.string.channel_name)
             val descriptionText = getString(R.string.channel_description)
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val importance = NotificationManager.IMPORTANCE_LOW
             val channel = NotificationChannel("101", name, importance).apply {
                 description = descriptionText
+                vibrationPattern = LongArray(0)
+                enableVibration(false)
             }
             // Register the channel with the system
             notificationManager =

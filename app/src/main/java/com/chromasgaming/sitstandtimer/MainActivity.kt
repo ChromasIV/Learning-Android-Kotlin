@@ -7,21 +7,16 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.net.ConnectivityManager
 import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
-import android.view.View
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
-import java.util.*
 
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MyBroadcastListener {
 
     private var notificationManager: NotificationManager? = null
 
@@ -29,12 +24,12 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val br: BroadcastReceiver = Restarter()
+        val receiver: BroadcastReceiver = MyReceiver(this)
 
         val filter = IntentFilter().apply {
-            addAction("com.chromasgaming.sitstandtimer")
+            addAction("com.chromasgaming.sitstandtimer.TEST")
         }
-        registerReceiver(br, filter)
+        registerReceiver(receiver, filter)
 
        val mTextField: TextView = findViewById(R.id.text1)
 
@@ -47,7 +42,6 @@ class MainActivity : AppCompatActivity() {
                     false -> "$min:$sec"
                 }
                 sendNotify(mTextField.text as String)
-
             }
 
             override fun onFinish() {
@@ -57,9 +51,18 @@ class MainActivity : AppCompatActivity() {
         val mButton: Button = findViewById(R.id.button)
         val mButton2: Button = findViewById(R.id.button2)
 
-        mButton.setOnClickListener {
 
+        mButton.setOnClickListener {
             startService(Intent(this, TimerService::class.java))
+            //sendBroadcast(Intent("com.chromasgaming.sitstandtimer.TEST"))
+
+
+//            Intent().also { intent ->
+//                intent.action = "com.chromasgaming.sitstandtimer.TEST"
+//                sendBroadcast(intent)
+//                Log.i("Test", "sennt")
+//            }
+            //sendBroadcast(Intent(this, TimerService::class.java))
 //            runBlocking {
 //                val job = launch {
 //                    timer.start()
@@ -114,5 +117,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         return null
+    }
+
+    override fun doSomething(value: String) {
+        val mTextField: TextView = findViewById(R.id.text1)
+        mTextField.text = value
     }
 }
